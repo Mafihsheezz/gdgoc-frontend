@@ -28,7 +28,7 @@ function Navbar() {
  }
 
   return (
-    <header className="relative z-50 w-full border-b border-[#E8E9EB] bg-white">
+    <header className="fixed left-0 top-0 z-50 w-full border-b border-[#E8E9EB] bg-white">
       <nav
         aria-label="Navigasi utama"
         className="mx-auto flex h-[70px] w-full items-center justify-between px-5 sm:px-8 lg:px-11"

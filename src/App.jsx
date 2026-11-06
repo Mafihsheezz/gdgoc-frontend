@@ -11,6 +11,7 @@ function App() {
     <BrowserRouter>
       <Navbar />
 
+      <main className="pt-[70px]"></main>
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/about" element={<About />} />
