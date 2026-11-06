@@ -1,8 +1,10 @@
+import HeroSection from './sections/HeroSection'
+
 function Landing() {
   return (
-    <div>
-      <h1>Landing Page</h1>
-    </div>
+    <main>
+      <HeroSection />
+    </main>
   )
 }
 
