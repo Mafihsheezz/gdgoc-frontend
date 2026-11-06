@@ -1,10 +1,14 @@
 import HeroSection from './sections/HeroSection'
+import ValueStrip from './sections/ValueStrip'
+import AboutSection from './sections/AboutSection'
 
 function Landing() {
   return (
-    <main>
+    <section>
       <HeroSection />
-    </main>
+      <ValueStrip />
+      <AboutSection />
+    </section>
   )
 }
 
