@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+
 import Navbar from './components/layout/Navbar'
 
 import Landing from './pages/Landing/Landing'
@@ -11,13 +12,14 @@ function App() {
     <BrowserRouter>
       <Navbar />
 
-      <main className="pt-[70px]"></main>
-      <Routes>
-        <Route path="/" element={<Landing />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/overview" element={<Overview />} />
-        <Route path="/contact" element={<Contact />} />
-      </Routes>
+      <main className="pt-[70px]">
+        <Routes>
+          <Route path="/" element={<Landing />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/overview" element={<Overview />} />
+          <Route path="/contact" element={<Contact />} />
+        </Routes>
+      </main>
     </BrowserRouter>
   )
 }
