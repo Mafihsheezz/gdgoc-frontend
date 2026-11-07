@@ -1,25 +1,30 @@
-import { useState } from 'react'
-
-const faqs = [
-  {
-    question: 'Do I need to know how to code?',
-    answer:
-      'No. Start with an interest in technology and a willingness to learn. Research and design are part of the journey, too.',
-  },
-  {
-    question: 'Is this only for computer science students?',
-    answer:
-      'Different disciplines bring different perspectives. Explore the overview to find a starting point that fits your interests.',
-  },
-  {
-    question: 'How can I find learning opportunities?',
-    answer:
-      'Keep an eye on @gdgoc.ugm for community updates. You can also use the contact page to ask about getting involved.',
-  },
-]
+import { useEffect, useState } from 'react'
+import { getFaqs } from '../../../services/api'
 
 function FAQSection() {
+  const [faqs, setFaqs] = useState([])
   const [openIndex, setOpenIndex] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    const fetchFaqs = async () => {
+      try {
+        setLoading(true)
+
+        const data = await getFaqs()
+        setFaqs(data)
+        setError('')
+      } catch (err) {
+        console.error('Gagal mengambil FAQ:', err)
+        setError('Gagal memuat pertanyaan. Silakan refresh halaman.')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchFaqs()
+  }, [])
 
   const toggleFAQ = (index) => {
     setOpenIndex(openIndex === index ? null : index)
@@ -49,48 +54,62 @@ function FAQSection() {
         </div>
 
         <div>
-          {faqs.map((faq, index) => (
-            <div
-              key={faq.question}
-              className="border-b border-[#E8EAED]"
-            >
-              <button
-                type="button"
-                onClick={() => toggleFAQ(index)}
-                aria-expanded={openIndex === index}
-                aria-controls={`faq-answer-${index}`}
-                className="flex w-full items-center justify-between gap-4 py-5 text-left"
+          {loading ? (
+            <p className="py-5 text-xs text-[#5F6368]">
+              Loading FAQs...
+            </p>
+          ) : error ? (
+            <p className="py-5 text-xs text-red-500">
+              {error}
+            </p>
+          ) : faqs.length === 0 ? (
+            <p className="py-5 text-xs text-[#5F6368]">
+              No FAQs available.
+            </p>
+          ) : (
+            faqs.map((faq, index) => (
+              <div
+                key={faq.id}
+                className="border-b border-[#E8EAED]"
               >
-                <span className="text-sm font-medium text-[#202124]">
-                  {faq.question}
-                </span>
-
-                <svg
-                  className={`h-4 w-4 shrink-0 text-[#4285F4] transition-transform duration-200 ${
-                    openIndex === index ? 'rotate-180' : ''
-                  }`}
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.8"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
+                <button
+                  type="button"
+                  onClick={() => toggleFAQ(index)}
+                  aria-expanded={openIndex === index}
+                  aria-controls={`faq-answer-${index}`}
+                  className="flex w-full items-center justify-between gap-4 py-5 text-left"
                 >
-                  <path d="m6 9 6 6 6-6" />
-                </svg>
-              </button>
+                  <span className="text-sm font-medium text-[#202124]">
+                    {faq.question}
+                  </span>
 
-              {openIndex === index && (
-                <p
-                  id={`faq-answer-${index}`}
-                  className="pb-5 pr-8 text-xs leading-relaxed text-[#5F6368]"
-                >
-                  {faq.answer}
-                </p>
-              )}
-            </div>
-          ))}
+                  <svg
+                    className={`h-4 w-4 shrink-0 text-[#4285F4] transition-transform duration-200 ${
+                      openIndex === index ? 'rotate-180' : ''
+                    }`}
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="m6 9 6 6 6-6" />
+                  </svg>
+                </button>
+
+                {openIndex === index && (
+                  <p
+                    id={`faq-answer-${index}`}
+                    className="pb-5 pr-8 text-xs leading-relaxed text-[#5F6368]"
+                  >
+                    {faq.answer}
+                  </p>
+                )}
+              </div>
+            ))
+          )}
         </div>
       </div>
     </section>

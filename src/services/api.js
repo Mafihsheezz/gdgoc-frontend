@@ -42,4 +42,12 @@ export const getInquiryCategories = async () => {
   return response.data.data;
 };
 
+export const getFaqs = async (category) => {
+  const response = await api.get("/faqs", {
+    params: category ? { category } : {},
+  });
+
+  return response.data.data;
+};
+
 export default api;
