@@ -32,4 +32,14 @@ export const getJourney = async () => {
   return response.data.data;
 };
 
+export const getRoles = async () => {
+  const response = await api.get("/roles");
+  return response.data.data;
+};
+
+export const getInquiryCategories = async () => {
+  const response = await api.get("/inquiry-categories");
+  return response.data.data;
+};
+
 export default api;

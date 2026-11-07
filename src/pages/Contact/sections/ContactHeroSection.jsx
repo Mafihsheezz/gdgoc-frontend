@@ -1,30 +1,30 @@
-import { useState } from "react";
-
-const inquiryTopics = [
-  {
-    icon: "↗",
-    title: "Joining & learning",
-    description: "Getting started, learning tracks, and participation",
-  },
-  {
-    icon: "+",
-    title: "Collaboration",
-    description: "Community activities and shared ideas",
-  },
-  {
-    icon: "◇",
-    title: "Speaking & sharing",
-    description: "Workshops, knowledge sharing, and mentorship",
-  },
-  {
-    icon: "?",
-    title: "General inquiry",
-    description: "Anything else you'd like to ask",
-  },
-];
+import { useEffect, useState } from "react";
+import { getInquiryCategories } from "../../../services/api";
 
 function ContactHeroSection() {
-  const [selectedTopic, setSelectedTopic] = useState("Joining & learning");
+  const [inquiryTopics, setInquiryTopics] = useState([]);
+  const [selectedTopic, setSelectedTopic] = useState("joining-learning");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const fetchInquiryCategories = async () => {
+      try {
+        setLoading(true);
+        const data = await getInquiryCategories();
+
+        setInquiryTopics(data);
+        setError("");
+      } catch (err) {
+        console.error("Gagal mengambil kategori inquiry:", err);
+        setError("Gagal memuat kategori. Silakan refresh halaman.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchInquiryCategories();
+  }, []);
 
   return (
     <section className="bg-white px-5 py-12 sm:py-16">
@@ -44,8 +44,8 @@ function ContactHeroSection() {
           </h1>
 
           <p className="mt-4 max-w-[560px] text-base leading-relaxed text-[#5F6368]">
-            A question, a collaboration, or an idea for the community? Tell
-            us what’s on your mind.
+            A question, a collaboration, or an idea for the community? Tell us
+            what’s on your mind.
           </p>
         </div>
 
@@ -63,31 +63,42 @@ function ContactHeroSection() {
 
             {/* Topic Cards */}
             <div className="mt-5 space-y-3">
-              {inquiryTopics.map((topic) => (
-                <button
-                  key={topic.title}
-                  type="button"
-                  onClick={() => setSelectedTopic(topic.title)}
-                  className={`flex w-full items-center gap-4 rounded-xl border px-4 py-4 text-left transition-colors ${
-                    selectedTopic === topic.title
-                      ? "border-[#E8F0FE] bg-[#E8F0FE]"
-                      : "border-[#DADCE0] bg-white hover:bg-[#F8F9FA]"
-                  }`}
-                >
-                  <span className="w-5 shrink-0 text-center text-xl font-medium text-[#1A73E8]">
-                    {topic.icon}
-                  </span>
+              {loading ? (
+                <p className="text-xs text-[#5F6368]">Loading categories...</p>
+              ) : error ? (
+                <p className="text-xs text-red-500">{error}</p>
+              ) : inquiryTopics.length === 0 ? (
+                <p className="text-xs text-[#5F6368]">
+                  No categories available.
+                </p>
+              ) : (
+                inquiryTopics.map((topic) => (
+                  <button
+                    key={topic.id}
+                    type="button"
+                    onClick={() => setSelectedTopic(topic.id)}
+                    className={`flex w-full items-center gap-4 rounded-xl border px-4 py-4 text-left transition-colors ${
+                      selectedTopic === topic.id
+                        ? "border-[#E8F0FE] bg-[#E8F0FE]"
+                        : "border-[#DADCE0] bg-white hover:bg-[#F8F9FA]"
+                    }`}
+                  >
+                    <span className="w-5 shrink-0 text-center text-xl font-medium text-[#1A73E8]">
+                      {topic.icon}
+                    </span>
 
-                  <span>
-                    <span className="block text-xs font-semibold text-[#202124]">
-                      {topic.title}
+                    <span>
+                      <span className="block text-xs font-semibold text-[#202124]">
+                        {topic.label}
+                      </span>
+
+                      <span className="mt-1 block text-[10px] leading-relaxed text-[#5F6368]">
+                        {topic.description}
+                      </span>
                     </span>
-                    <span className="mt-1 block text-[10px] leading-relaxed text-[#5F6368]">
-                      {topic.description}
-                    </span>
-                  </span>
-                </button>
-              ))}
+                  </button>
+                ))
+              )}
             </div>
 
             {/* Community Card */}
@@ -195,11 +206,12 @@ function ContactHeroSection() {
                     required
                     value={selectedTopic}
                     onChange={(e) => setSelectedTopic(e.target.value)}
+                    disabled={loading || inquiryTopics.length === 0}
                     className="w-full appearance-none rounded-md border border-[#DADCE0] bg-white px-3 py-3 pr-10 text-xs text-[#5F6368] outline-none transition focus:border-[#4285F4]"
                   >
                     {inquiryTopics.map((topic) => (
-                      <option key={topic.title} value={topic.title}>
-                        {topic.title}
+                      <option key={topic.id} value={topic.id}>
+                        {topic.label}
                       </option>
                     ))}
                   </select>
@@ -252,8 +264,8 @@ function ContactHeroSection() {
                   className="mt-0.5 accent-[#1A73E8]"
                 />
                 <span>
-                  I agree that the information I share can be used to respond
-                  to this inquiry.
+                  I agree that the information I share can be used to respond to
+                  this inquiry.
                 </span>
               </label>
 
