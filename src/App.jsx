@@ -6,6 +6,7 @@ import Landing from './pages/Landing/Landing'
 import About from './pages/About/About'
 import Overview from './pages/Overview/Overview'
 import Contact from './pages/Contact/Contact'
+import Footer from './components/layout/Footer'
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
           <Route path="/overview" element={<Overview />} />
           <Route path="/contact" element={<Contact />} />
         </Routes>
+        <Footer />
       </main>
     </BrowserRouter>
   )
