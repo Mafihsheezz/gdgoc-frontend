@@ -1,33 +1,12 @@
-const principles = [
-  {
-    title: 'Stay curious',
-    description:
-      'Ask the extra question. Be willing to learn something outside your comfort zone.',
-    color: '#4285F4',
-    icon: 'book',
-  },
-  {
-    title: 'Make room',
-    description:
-      'Welcome different perspectives, respect each other, and help people find their voice.',
-    color: '#EA4335',
-    icon: 'users',
-  },
-  {
-    title: 'Learn by building',
-    description:
-      'Try a small experiment. Share the rough version. Let feedback guide what comes next.',
-    color: '#FBBC04',
-    icon: 'code',
-  },
-  {
-    title: 'Give something back',
-    description:
-      'Share a resource, explain what clicked, or help someone take their next step.',
-    color: '#34A853',
-    icon: 'heart',
-  },
-]
+import { useEffect, useState } from 'react'
+import { getValues } from '../../../services/api'
+
+const principleIcons = {
+  'stay-curious': 'book',
+  'make-room': 'users',
+  'learn-by-building': 'code',
+  'give-something-back': 'heart',
+}
 
 function PrincipleIcon({ type }) {
   const commonProps = {
@@ -74,6 +53,26 @@ function PrincipleIcon({ type }) {
 }
 
 function WhatGuidesUsSection() {
+  const [principles, setPrinciples] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
+
+  useEffect(() => {
+    const fetchValues = async () => {
+      try {
+        const data = await getValues()
+        setPrinciples(data)
+      } catch (err) {
+        console.error('Failed to fetch values:', err)
+        setError(true)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchValues()
+  }, [])
+
   return (
     <section className="bg-white px-5 py-14 sm:py-16">
       <div className="mx-auto w-full max-w-[1060px]">
@@ -93,34 +92,50 @@ function WhatGuidesUsSection() {
         </div>
 
         {/* Principle Cards */}
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          {principles.map((principle) => (
-            <article
-              key={principle.title}
-              className="min-h-[145px] rounded-2xl border border-[#DADCE0] bg-white p-4 transition-shadow duration-200 hover:shadow-sm"
-            >
-              <div
-                className="mb-4 h-[2px] w-7"
-                style={{ backgroundColor: principle.color }}
-              />
-
-              <div
-                className="mb-3"
-                style={{ color: '#4285F4' }}
+        {loading ? (
+          <p className="text-sm text-[#5F6368]">
+            Loading principles...
+          </p>
+        ) : error ? (
+          <p className="text-sm text-red-500">
+            Failed to load principles. Please try again later.
+          </p>
+        ) : principles.length === 0 ? (
+          <p className="text-sm text-[#5F6368]">
+            No principles available at the moment.
+          </p>
+        ) : (
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {principles.map((principle) => (
+              <article
+                key={principle.id}
+                className="min-h-[145px] rounded-2xl border border-[#DADCE0] bg-white p-4 transition-shadow duration-200 hover:shadow-sm"
               >
-                <PrincipleIcon type={principle.icon} />
-              </div>
+                <div
+                  className="mb-4 h-[2px] w-7"
+                  style={{ backgroundColor: principle.color }}
+                />
 
-              <h3 className="text-sm font-bold text-[#202124]">
-                {principle.title}
-              </h3>
+                <div
+                  className="mb-3"
+                  style={{ color: '#4285F4' }}
+                >
+                  <PrincipleIcon
+                    type={principleIcons[principle.id]}
+                  />
+                </div>
 
-              <p className="mt-2 text-[10px] leading-relaxed text-[#5F6368]">
-                {principle.description}
-              </p>
-            </article>
-          ))}
-        </div>
+                <h3 className="text-sm font-bold text-[#202124]">
+                  {principle.title}
+                </h3>
+
+                <p className="mt-2 text-[10px] leading-relaxed text-[#5F6368]">
+                  {principle.description}
+                </p>
+              </article>
+            ))}
+          </div>
+        )}
 
       </div>
     </section>
