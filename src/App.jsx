@@ -7,10 +7,12 @@ import About from './pages/About/About'
 import Overview from './pages/Overview/Overview'
 import Contact from './pages/Contact/Contact'
 import Footer from './components/layout/Footer'
+import ScrollToTop from './components/layout/ScrollToTop'
 
 function App() {
   return (
     <BrowserRouter>
+    <ScrollToTop />
       <Navbar />
 
       <main className="pt-[70px]">
