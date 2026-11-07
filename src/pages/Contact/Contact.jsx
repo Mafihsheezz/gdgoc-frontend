@@ -1,9 +1,13 @@
+import ContactHeroSection from "./sections/ContactHeroSection";
+import ContactGuidanceSection from "./sections/ContactGuidanceSection";
+
 function Contact() {
   return (
-    <div>
-      <h1>Contact Page</h1>
-    </div>
-  )
+    <>
+      <ContactHeroSection />
+      <ContactGuidanceSection />
+    </>
+  );
 }
 
-export default Contact
+export default Contact;
