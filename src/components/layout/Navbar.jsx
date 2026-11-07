@@ -1,16 +1,35 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import gdgocLogo from '../../assets/images/gdgoc-identity.svg'
-
-const navItems = [
-  { label: 'Home', path: '/', end: true },
-  { label: 'About', path: '/about' },
-  { label: 'Overview', path: '/overview' },
-  { label: 'Contact', path: '/contact' },
-]
+import { getNavigation } from '../../services/api'
 
 function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [navItems, setNavItems] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    const fetchNavigation = async () => {
+      try {
+        const data = await getNavigation()
+
+        setNavItems(data.map((item) => ({
+          ...item,
+          end: item.href === '/',
+        })))
+
+        setError('')
+      } catch (err) {
+        console.error('Gagal mengambil navigation:', err)
+        setError('Gagal memuat navigasi.')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchNavigation()
+  }, [])
 
   const closeMenu = () => {
     setIsMenuOpen(false)
@@ -18,14 +37,14 @@ function Navbar() {
 
   const getNavLinkClass = ({ isActive }) => {
     const baseClass =
-        'rounded-full px-3 py-2 text-sm transition-all duration-200'
+      'rounded-full px-3 py-2 text-sm transition-all duration-200'
 
     const activeClass = isActive
-        ? 'bg-[#E8F0FE] font-semibold text-[#1A73E8]'
-        : 'font-normal text-[#5F6368] hover:bg-[#E8F0FE] hover:text-[#1A73E8]'
+      ? 'bg-[#E8F0FE] font-semibold text-[#1A73E8]'
+      : 'font-normal text-[#5F6368] hover:bg-[#E8F0FE] hover:text-[#1A73E8]'
 
     return `${baseClass} ${activeClass}`
- }
+  }
 
   return (
     <header className="fixed left-0 top-0 z-50 w-full border-b border-[#E8E9EB] bg-white">
@@ -49,10 +68,10 @@ function Navbar() {
 
         {/* Desktop Navigation */}
         <ul className="hidden items-center gap-2 lg:flex">
-          {navItems.map((item) => (
-            <li key={item.path}>
+          {!loading && !error && navItems.map((item) => (
+            <li key={item.href}>
               <NavLink
-                to={item.path}
+                to={item.href}
                 end={item.end}
                 className={getNavLinkClass}
               >
@@ -139,10 +158,10 @@ function Navbar() {
           className="absolute left-0 top-full w-full border-b border-[#E8E9EB] bg-white px-5 py-5 shadow-lg sm:px-8 lg:hidden"
         >
           <ul className="flex flex-col gap-2">
-            {navItems.map((item) => (
-              <li key={item.path}>
+            {!loading && !error && navItems.map((item) => (
+              <li key={item.href}>
                 <NavLink
-                  to={item.path}
+                  to={item.href}
                   end={item.end}
                   onClick={closeMenu}
                   className={({ isActive }) =>

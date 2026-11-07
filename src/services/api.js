@@ -50,4 +50,9 @@ export const getFaqs = async (category) => {
   return response.data.data;
 };
 
+export const getNavigation = async () => {
+  const response = await api.get("/navigation");
+  return response.data.data;
+};
+
 export default api;
