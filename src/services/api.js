@@ -22,4 +22,9 @@ export const getValues = async () => {
   return response.data.data;
 };
 
+export const getFormats = async () => {
+  const response = await api.get("/formats");
+  return response.data.data;
+};
+
 export default api;
