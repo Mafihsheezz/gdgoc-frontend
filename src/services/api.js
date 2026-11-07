@@ -27,4 +27,9 @@ export const getFormats = async () => {
   return response.data.data;
 };
 
+export const getJourney = async () => {
+  const response = await api.get("/journey");
+  return response.data.data;
+};
+
 export default api;

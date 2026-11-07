@@ -1,37 +1,34 @@
-const steps = [
-  {
-    number: '01',
-    title: 'Discover',
-    description:
-      'Explore a topic and find the questions you want to answer.',
-  },
-  {
-    number: '02',
-    title: 'Practice',
-    description:
-      'Try an exercise, work through a challenge, and ask for help.',
-  },
-  {
-    number: '03',
-    title: 'Build',
-    description:
-      'Apply your learning to a small idea with a clear purpose.',
-  },
-  {
-    number: '04',
-    title: 'Share',
-    description:
-      'Show your process, gather feedback, and help someone else.',
-  },
-]
+import { useEffect, useState } from 'react'
+import { getJourney } from '../../../services/api'
 
 function LearningJourneySection() {
+  const [steps, setSteps] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
+
+  useEffect(() => {
+    const fetchJourney = async () => {
+      try {
+        const data = await getJourney()
+        setSteps(data)
+      } catch (err) {
+        console.error('Failed to fetch journey:', err)
+        setError(true)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchJourney()
+  }, [])
+
   return (
     <section
       id="learning-journey"
       className="scroll-mt-20 bg-white px-5 py-14 sm:py-16"
     >
       <div className="mx-auto w-full max-w-[1060px]">
+
         {/* Section Heading */}
         <div className="mb-8">
           <div className="mb-3 flex items-center gap-2">
@@ -47,25 +44,40 @@ function LearningJourneySection() {
         </div>
 
         {/* Journey Steps */}
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 lg:gap-5">
-          {steps.map((step) => (
-            <article key={step.number}>
-              <span className="text-3xl font-bold tracking-tight text-[#4285F4]">
-                {step.number}
-              </span>
+        {loading ? (
+          <p className="text-sm text-[#5F6368]">
+            Loading learning journey...
+          </p>
+        ) : error ? (
+          <p className="text-sm text-red-500">
+            Failed to load learning journey. Please try again later.
+          </p>
+        ) : steps.length === 0 ? (
+          <p className="text-sm text-[#5F6368]">
+            No learning journey steps available at the moment.
+          </p>
+        ) : (
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 lg:gap-5">
+            {steps.map((step) => (
+              <article key={step.id}>
+                <span className="text-3xl font-bold tracking-tight text-[#4285F4]">
+                  {String(step.step).padStart(2, '0')}
+                </span>
 
-              <div className="mt-4 border-t border-[#DADCE0] pt-4">
-                <h3 className="text-base font-bold text-[#202124]">
-                  {step.title}
-                </h3>
+                <div className="mt-4 border-t border-[#DADCE0] pt-4">
+                  <h3 className="text-base font-bold text-[#202124]">
+                    {step.title}
+                  </h3>
 
-                <p className="mt-2 text-xs leading-relaxed text-[#5F6368]">
-                  {step.description}
-                </p>
-              </div>
-            </article>
-          ))}
-        </div>
+                  <p className="mt-2 text-xs leading-relaxed text-[#5F6368]">
+                    {step.description}
+                  </p>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
+
       </div>
     </section>
   )
